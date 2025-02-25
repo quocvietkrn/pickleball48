@@ -12,17 +12,17 @@ package model;
 public class PickleBallField {
     private int IDPickleBallField;
     private String Name;
-    private int TypeofFootballField;
+    private int TypeofPickleBallField;
     private double Price;
     private String Image;
     private int Status;
 
    public PickleBallField() {
     }
-    public PickleBallField(int IDPickleBallField, String Name, int TypeofFootballField, double Price, String Image, int Status) {
+    public PickleBallField(int IDPickleBallField, String Name, int TypeofPickleBallField, double Price, String Image, int Status) {
         this.IDPickleBallField = IDPickleBallField;
         this.Name = Name;
-        this.TypeofFootballField = TypeofFootballField;
+        this.TypeofPickleBallField = TypeofPickleBallField;
         this.Price = Price;
         this.Image = Image;
         this.Status = Status;
@@ -33,8 +33,8 @@ public class PickleBallField {
     public String getName() { return Name; }
     public void setName(String Name) { this.Name = Name; }
 
-    public int getTypeofFootballField() { return TypeofFootballField; }
-    public void setTypeofFootballField(int TypeofFootballField) { this.TypeofFootballField = TypeofFootballField; }
+    public int getTypeofPickleBallField() { return TypeofPickleBallField; }
+    public void setTypeofPickleBallField(int TypeofPickleBallField) { this.TypeofPickleBallField = TypeofPickleBallField; }
 
     public double getPrice() { return Price; }
     public void setPrice(double Price) { this.Price = Price; }
