@@ -240,6 +240,55 @@ public class RegisteredPickleBallFieldDAO extends DBContext {
         }
         return id;
     }
+     public List<RegisteredPickleBallField> getRegisteredPickleBallFielWithStatusAndDate(int status, String date1) {
+    List<RegisteredPickleBallField> list = new ArrayList<>();
+    AccountDAO userd = new AccountDAO();
+    PickleBallFieldScheduleDAO ffsd = new PickleBallFieldScheduleDAO();
+
+    String sql = "SELECT [IDRegisteredPickleBallField], [IDAccount1], [IDPickleBallFieldSchedule], "
+               + "[Date], [Name], [PhoneNumber], [Deposit], [Status], [Note] "
+               + "FROM [dbo].[RegisteredPickleBallField] WHERE Status = ? AND Date = ?";
+
+    try {
+        PreparedStatement st = getConnection().prepareStatement(sql);
+        st.setInt(1, status);
+        st.setString(2, date1);
+        ResultSet rs = st.executeQuery();
+
+        while (rs.next()) {
+            int IDRegisteredPickleBallField = rs.getInt("IDRegisteredPickleBallField");
+            int IDAccount1 = rs.getInt("IDAccount1");
+            Account Account1 = userd.getAccountByID(IDAccount1);
+            int IDPickleBallFieldSchedule = rs.getInt("IDPickleBallFieldSchedule");
+            PickleBallFieldSchedule fFS = ffsd.getPickleBallFieldScheduleByID(IDPickleBallFieldSchedule);
+            Date Date = rs.getDate("Date");
+            String Name = rs.getString("Name");
+            String PhoneNumber = rs.getString("PhoneNumber");
+            int Deposit = rs.getInt("Deposit");
+            int Status = rs.getInt("Status");
+            String Note = rs.getString("Note");
+
+            // Không cần IDAccount2
+            RegisteredPickleBallField rFF = new RegisteredPickleBallField(
+                IDRegisteredPickleBallField, 
+                Account1, 
+                null,  // Account2 bỏ qua (đặt null)
+                fFS, 
+                Date, 
+                Name, 
+                PhoneNumber, 
+                Deposit, 
+                Status, 
+                Note
+            );
+            list.add(rFF);
+        }
+    } catch (SQLException ex) {
+        Logger.getLogger(AccountDAO.class.getName()).log(Level.SEVERE, null, ex);
+    }
+    return list;
+}
+
 
     // Phương thức main để kiểm tra
     public static void main(String[] args) {

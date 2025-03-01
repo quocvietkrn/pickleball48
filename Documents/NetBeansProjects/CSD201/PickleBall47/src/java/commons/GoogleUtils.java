@@ -42,7 +42,7 @@ public static String getGoogleRedirectURL() {
   String googleRedirectURL = "https://accounts.google.com/o/oauth2/auth?client_id=" + Constants.GOOGLE_CLIENT_ID
       + "&redirect_uri=" + Constants.GOOGLE_REDIRECT_URI
       + "&response_type=code"
-      + "&scope=email%20profile"; // Include the profile scope
+      + "&scope=email%20profile"; 
   return googleRedirectURL;
 }
 }

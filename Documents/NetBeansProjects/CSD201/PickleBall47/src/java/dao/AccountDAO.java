@@ -186,78 +186,53 @@ public class AccountDAO extends DBContext {
     }
 
     // Thêm tài khoản mới
-    public boolean addAccount(Account account) {
-        String sql = "INSERT INTO [dbo].[Account]\n"
-                + "           ([Name]\n"
-                + "           ,[UserName]\n"
-                + "           ,[PassWord]\n"
-                + "           ,[Gender]\n"
-                + "           ,[PhoneNumber]\n"
-                + "           ,[IDEmail]\n"
-                + "           ,[IDFacebook]\n"
-                + "           ,[Bank]\n"
-                + "           ,[BankNumber]\n"
-                + "           ,[Role]\n"
-                + "           ,[Status]\n"
-                + "           ,[Dob])\n"
-                + "     VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)";
-        try {
-            PreparedStatement st = getConnection().prepareStatement(sql);
-            st.setString(1, account.getName());
-            st.setString(2, account.getUserName());
-            st.setString(3, account.getPassWord());
-            st.setInt(4, account.getGender());
-            st.setString(5, account.getPhoneNumber());
-            st.setString(6, account.getIDEmail());
-            st.setString(7, account.getIDFacebook());
-            st.setString(8, account.getBank());
-            st.setString(9, account.getBankNumber());
-            st.setInt(10, account.getRole());
-            st.setInt(11, account.getStatus());
-            st.setDate(12, new java.sql.Date(account.getDob().getTime()));
-            int rowsAffected = st.executeUpdate();
-            return rowsAffected > 0;
-        } catch (SQLException ex) {
-            Logger.getLogger(AccountDAO.class.getName()).log(Level.SEVERE, null, ex);
+    public boolean addUser(Account account) {
+        try ( Connection connection = getConnection()) {
+            String query = "INSERT INTO Account (UserName, [PassWord], [Name], IDEmail, Role, Status, Gender) VALUES (?, ?, ?, ?, ?, ?, ?)";
+
+            try ( PreparedStatement preparedStatement = connection.prepareStatement(query)) {
+
+                preparedStatement.setString(1, account.getUserName());
+                preparedStatement.setString(2, account.getPassWord());
+                preparedStatement.setString(3, account.getName());
+                preparedStatement.setString(4, account.getIDEmail());
+                // set default for user register have role = 1 [Customer] va status = 0;
+                preparedStatement.setInt(5, 1);
+                preparedStatement.setInt(6, 0);
+                preparedStatement.setInt(7, account.getGender());
+                int rowsAffected = preparedStatement.executeUpdate();
+                return rowsAffected > 0; // Returns true if at least one row was affected
+            }
+        } catch (SQLException e) {
+            e.printStackTrace(); // Print the stack trace for debugging purposes
+            System.out.println("Add user unsuccessfully!");
+            return false;
         }
-        return false;
     }
 
     // Cập nhật thông tin tài khoản
-    public boolean updateAccount(Account account) {
-        String sql = "UPDATE [dbo].[Account]\n"
-                + "   SET [Name] = ?\n"
-                + "      ,[UserName] = ?\n"
-                + "      ,[PassWord] = ?\n"
-                + "      ,[Gender] = ?\n"
-                + "      ,[PhoneNumber] = ?\n"
-                + "      ,[IDEmail] = ?\n"
-                + "      ,[IDFacebook] = ?\n"
-                + "      ,[Bank] = ?\n"
-                + "      ,[BankNumber] = ?\n"
-                + "      ,[Role] = ?\n"
-                + "      ,[Status] = ?\n"
-                + "      ,[Dob] = ?\n"
-                + " WHERE [IDAccount] = ?";
+    public boolean updateProfile(Account user, String Date) {
+        String sql = "UPDATE dbo.[Account] SET [Name] = ?, [PhoneNumber] = ?, [IDEmail] = ?, "
+                + "[Gender] = ?, [Dob] = ?, [IDFacebook] = ?, [Bank] = ? , [BankNumber] = ? "
+                + "WHERE [IDAccount] = ?";
         try {
             PreparedStatement st = getConnection().prepareStatement(sql);
-            st.setString(1, account.getName());
-            st.setString(2, account.getUserName());
-            st.setString(3, account.getPassWord());
-            st.setInt(4, account.getGender());
-            st.setString(5, account.getPhoneNumber());
-            st.setString(6, account.getIDEmail());
-            st.setString(7, account.getIDFacebook());
-            st.setString(8, account.getBank());
-            st.setString(9, account.getBankNumber());
-            st.setInt(10, account.getRole());
-            st.setInt(11, account.getStatus());
-            st.setDate(12, new java.sql.Date(account.getDob().getTime()));
-            st.setInt(13, account.getIDAccount());
-            int rowsAffected = st.executeUpdate();
-            return rowsAffected > 0;
-        } catch (SQLException ex) {
-            Logger.getLogger(AccountDAO.class.getName()).log(Level.SEVERE, null, ex);
+            st.setString(1, user.getName());
+            st.setString(2, user.getPhoneNumber());
+            st.setString(3, user.getIDEmail());
+            st.setInt(4, user.getGender());
+            st.setString(5, Date);
+            st.setString(6, user.getIDFacebook());
+            st.setString(7, user.getBank());
+            st.setString(8, user.getBankNumber());
+            st.setInt(9, user.getIDAccount());
+            int affectedRow = st.executeUpdate();
+            if (affectedRow > 0) {
+                return true;
+            }
+            return false;
+        } catch (SQLException e) {
+            System.out.println(e);
         }
         return false;
     }
@@ -290,4 +265,109 @@ public class AccountDAO extends DBContext {
         }
         return false;
     }
+   public void insertAccountByGoogle(Account user) {
+    String sql = "INSERT INTO [dbo].[Account] ([Name], [UserName], [IDEmail], [Role]) VALUES (?, ?, ?, ?)";
+    try {
+        PreparedStatement st = getConnection().prepareStatement(sql);
+        st.setString(1, user.getName());
+        st.setString(2, user.getIDEmail()); // Dùng email làm UserName nếu cần
+        st.setString(3, user.getIDEmail());
+        st.setInt(4, user.getRole());
+        st.executeUpdate();
+    } catch (SQLException e) {
+        e.printStackTrace(); // In lỗi ra console
+    }
+}
+
+
+    public boolean checkEmail(String email) {
+        String sql = "SELECT TOP (1000) [IDAccount]\n"
+                + "      ,[Name]\n"
+                + "      ,[UserName]\n"
+                + "      ,[PassWord]\n"
+                + "      ,[Gender]\n"
+                + "      ,[PhoneNumber]\n"
+                + "      ,[IDEmail]\n"
+                + "      ,[IDFacebook]\n"
+                + "      ,[Bank]\n"
+                + "      ,[BankNumber]\n"
+                + "      ,[Role]\n"
+                + "  FROM [dbo].[Account] where IDEmail = ?";
+        try {
+            PreparedStatement st = getConnection().prepareStatement(sql);
+            st.setString(1, email);
+            ResultSet rs = st.executeQuery();
+            while (rs.next()) {
+
+                return true;
+            }
+        } catch (SQLException ex) {
+            Logger.getLogger(AccountDAO.class.getName()).log(Level.SEVERE, null, ex);
+        }
+
+        return false;
+    }
+
+    public int getLengthAccount() {
+        int i = 0;
+        String sql = "SELECT [IDAccount]\n"
+                + "      ,[Name]\n"
+                + "      ,[UserName]\n"
+                + "      ,[PassWord]\n"
+                + "      ,[Gender]\n"
+                + "      ,[PhoneNumber]\n"
+                + "      ,[IDEmail]\n"
+                + "      ,[IDFacebook]\n"
+                + "      ,[Bank]\n"
+                + "      ,[BankNumber]\n"
+                + "      ,[Role]\n"
+                + "  FROM [dbo].[Account]";
+        try {
+            PreparedStatement st = getConnection().prepareStatement(sql);
+            ResultSet rs = st.executeQuery();
+            while (rs.next()) {
+                i++;
+            }
+
+        } catch (SQLException e) {
+            System.out.println(e);
+        }
+        return i;
+    }
+     public static void main(String[] args) {
+    // Thông tin test
+    String testUsername = "abc";
+    String testPassword = "testPassword";
+    String testName = "Test User";
+    String email = "ac@gmail.com";
+
+    // Tạo AccountDAO
+    AccountDAO userDAO = new AccountDAO();
+
+    // Kiểm tra xem email đã tồn tại chưa
+    if (!userDAO.checkEmail(email)) {
+        // Nếu chưa tồn tại, thêm tài khoản mới
+        Account user = new Account();
+        user.setName(testName);
+        user.setUserName(testUsername);
+        user.setIDEmail(email);
+        user.setPassWord(testPassword);
+        user.setRole(1); // Set role mặc định
+
+        userDAO.insertAccountByGoogle(user);
+        System.out.println("Tài khoản mới đã được thêm vào database.");
+    } else {
+        System.out.println("Email đã tồn tại trong hệ thống.");
+    }
+
+    // Kiểm tra lại dữ liệu trong database
+    Account checkUser = userDAO.getAccountByUserName(testUsername);
+    if (checkUser != null) {
+        System.out.println("Dữ liệu trong database: " + checkUser);
+    } else {
+        System.out.println("Không tìm thấy tài khoản với username: " + testUsername);
+    }
+}
+
+
     }

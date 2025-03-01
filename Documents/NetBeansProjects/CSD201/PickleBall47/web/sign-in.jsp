@@ -335,7 +335,7 @@
                     <button class="ghost" id="signIn">Đăng Nhập</button>
                 </div>
                 <div class="overlay-panel overlay-right">
-                    <h1>FBK74</h1>
+                    <h1>PickleBall47</h1>
                     <p>Nhập thông tin cá nhân của bạn và bắt đầu hành trình với chúng tôi</p>
                     <button class="ghost" id="signUp">Đăng Ký</button>
                 </div>
@@ -465,3 +465,4 @@ document.addEventListener('DOMContentLoaded', function () {
 
 </script>
 
+    

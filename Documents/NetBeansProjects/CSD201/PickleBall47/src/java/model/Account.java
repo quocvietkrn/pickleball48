@@ -43,9 +43,21 @@ public class Account {
     }
 
     public Account() {
-        throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
+    }
+public Account(String Name, String UserName,String email,String PassWord) {
+        this.Name = Name;
+        this.UserName = UserName;
+        this.IDEmail = email;
+        this.PassWord = PassWord;
     }
 
+    public Account(String Name, String UserName, String PassWord, int Gender, String PhoneNumber) {
+        this.Name = Name;
+        this.UserName = UserName;
+        this.PassWord = PassWord;
+        this.Gender = Gender;
+        this.PhoneNumber = PhoneNumber;
+    }
     // Getters and Setters
     public int getIDAccount() { return IDAccount; }
     public void setIDAccount(int IDAccount) { this.IDAccount = IDAccount; }
